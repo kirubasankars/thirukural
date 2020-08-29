@@ -63,7 +63,7 @@ for line in reading_file:
   new_file_content += new_line +"\n"
 reading_file.close()
 
-writing_file = open("index.html", "w")
+writing_file = open("./docs/index.html", "w")
 writing_file.write(new_file_content.encode('UTF-8'))
 writing_file.close()
 
