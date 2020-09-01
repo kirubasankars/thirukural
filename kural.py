@@ -12,19 +12,19 @@ cur.execute("SELECT cast(kurals.id as int) as id, kural, title, content FROM kur
 rows = cur.fetchall()
 
 kural_id = '''
-    <div class="sl-block" data-block-type="text" style="height: auto; width: 80px; left: 10px; top: 0; z-index: 11; color: rgb(102, 102, 102); text-align: center;">
+    <div class="sl-block k_id" data-block-type="text">
         kural_id
     </div>
 '''
 
 kural_title = '''
-    <div class="sl-block" data-block-type="text" style="height: auto; width: 480px; left: 480px; top: 0px;z-index: 12; color: rgb(102, 102, 102); text-align: right;">
+    <div class="sl-block k_t" data-block-type="text">
         kural_title
     </div>
 '''
 
 kural_explaination = '''
-    <div class="sl-block" data-block-type="text" style="height: auto; width: 480px; left: 430px; top: 380px; color: rgb(102, 102, 102); word-wrap: break-word;text-align: left;position: relative">
+    <div class="sl-block k_e" data-block-type="text">
         <span style="position: absolute; left: -25px; top: 5px;">-</span><span style="font-size:0.7em">kural_explaination</span>
     </div>
 '''
