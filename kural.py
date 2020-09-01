@@ -12,26 +12,26 @@ cur.execute("SELECT cast(kurals.id as int) as id, kural, title, content FROM kur
 rows = cur.fetchall()
 
 kural_id = '''
-    <div class="sl-block" data-block-type="text" style="height: auto; width: 80px; left: 880px; top: 661px; z-index: 11; color: rgb(102, 102, 102); text-align: center;">
-            kural_id
+    <div class="sl-block" data-block-type="text" style="height: auto; width: 80px; left: 10px; top: 0; z-index: 11; color: rgb(102, 102, 102); text-align: center;">
+        kural_id
     </div>
 '''
 
 kural_title = '''
-        <div class="sl-block" data-block-type="text" style="height: auto; width: 480px; left: 480px; top: 0px;z-index: 12; color: rgb(102, 102, 102); text-align: right;">
-            kural_title
-        </div>
-    '''
+    <div class="sl-block" data-block-type="text" style="height: auto; width: 480px; left: 480px; top: 0px;z-index: 12; color: rgb(102, 102, 102); text-align: right;">
+        kural_title
+    </div>
+'''
 
 kural_explaination = '''
-    <div class="sl-block" data-block-type="text" style="height: auto; width: 480px; left: 430px; top: 420px; color: rgb(102, 102, 102); word-wrap: break-word;text-align: left;">
-        <span style="font-size:0.7em">kural_explaination</span>
+    <div class="sl-block" data-block-type="text" style="height: auto; width: 480px; left: 430px; top: 380px; color: rgb(102, 102, 102); word-wrap: break-word;text-align: left;position: relative">
+        <span style="position: absolute; left: -25px; top: 5px;">-</span><span style="font-size:0.7em">kural_explaination</span>
     </div>
 '''
 
 kural_template = '''
     <section data-background-color="#222222" data-transition="convex">
-        <div class="sl-block" data-block-type="text" style="height: auto; width: 666px; left: 134px; top: 280px;z-index: 10; color: rgb(255, 255, 255);">
+        <div class="sl-block" data-block-type="text" style="height: auto; width: 666px; left: 134px; top: 240px;z-index: 10; color: rgb(255, 255, 255);">
             kural            
         </div>
         kural_id
