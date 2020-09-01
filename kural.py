@@ -6,7 +6,9 @@ from unicodedata import normalize
 conn = sqlite3.connect('./src/kural.db')
 
 cur = conn.cursor()
-cur.execute("SELECT cast(id as int) as id, kural, title FROM kurals order by 1")
+cur.execute("SELECT cast(kurals.id as int) as id, kural, title, content FROM kurals join vilakams WHERE kurals.id = vilakams.id order by kurals.id")
+#cur.execute("SELECT cast(id as int) as id, kural, title FROM kurals order by id")
+
 rows = cur.fetchall()
 
 kural_id = '''
@@ -21,6 +23,12 @@ kural_title = '''
         </div>
     '''
 
+kural_explaination = '''
+    <div class="sl-block" data-block-type="text" style="height: auto; width: 480px; left: 430px; top: 420px; color: rgb(102, 102, 102); word-wrap: break-word;text-align: left;">
+        <span style="font-size:0.7em">kural_explaination</span>
+    </div>
+'''
+
 kural_template = '''
     <section data-background-color="#222222" data-transition="convex">
         <div class="sl-block" data-block-type="text" style="height: auto; width: 666px; left: 134px; top: 280px;z-index: 10; color: rgb(255, 255, 255);">
@@ -28,6 +36,7 @@ kural_template = '''
         </div>
         kural_id
         kural_title
+        kural_explaination
     </section>
 '''
 
@@ -36,15 +45,15 @@ kurals = []
 for row in rows:
    output = ""
    if row[0] % 10 == 1:
-       output = "<section>" + kural_template.replace("kural_id", "").replace("kural_title", "").replace('data-transition="convex"', 'data-autoslide="4000"').replace("kural" , "<p>" + normalize('NFC', row[2]) + "</p>")
+       output = "<section>" + kural_template.replace("kural_id", "").replace("kural_title", "").replace("kural_explaination", "").replace('data-transition="convex"', 'data-autoslide="4000"').replace("kural" , "<p>" + normalize('NFC', row[2]) + "</p>")
    x = row[1].split("<br/>")
    x[1] = x[1].strip().rstrip(".") + "."
    x = ["<p>" + normalize('NFC', line) + "</p>" for line in x]
    k_id = kural_id.replace("kural_id", str(row[0]))
    k_title = kural_title.replace("kural_title", row[2])
-   output += kural_template.replace("kural_id", k_id).replace("kural_title", k_title).replace("kural" ,  "".join(x))
+   k_explaination = kural_explaination.replace("kural_explaination", row[3])
+   output += kural_template.replace("kural_id", k_id).replace("kural_title", k_title).replace("kural_explaination", k_explaination).replace("kural",  "".join(x))
    if row[0] % 10 == 0:
-       #output = output.replace('data-transition="convex"', 'data-transition="zoom"')
        output += "</section>"
    kurals.append(output)
 
