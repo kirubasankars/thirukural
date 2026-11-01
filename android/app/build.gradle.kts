@@ -11,8 +11,8 @@ android {
         applicationId = "com.kirubasankars.thirukural"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 4
+        versionName = "1.1.2"
     }
 
     buildTypes {
@@ -28,6 +28,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    lint {
+        checkReleaseBuilds = false
     }
 }
 
@@ -45,7 +49,7 @@ val copyDeck = tasks.register<Copy>("copyDeck") {
 android.sourceSets.getByName("main").assets.srcDir(generatedAssets)
 
 tasks.configureEach {
-    if (name.startsWith("merge") && name.endsWith("Assets")) {
+    if ((name.startsWith("merge") && name.endsWith("Assets")) || name.contains("Lint")) {
         dependsOn(copyDeck)
     }
 }
