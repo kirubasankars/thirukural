@@ -372,19 +372,66 @@ _PANEL = """<!-- kural-search:start -->
 #kural-search-results .meta { color: #9a9a9a; font-size: 13px; }
 #kural-search-results .kural { color: #fff; margin-top: 4px; white-space: pre-line; }
 #kural-search-results .note { color: #bdbdbd; font-size: 14px; margin-top: 4px; }
+html.kural-narrow,
+html.kural-narrow body {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  background: #222222 !important;
+  overscroll-behavior: none;
+}
+html.kural-narrow .reveal-viewport,
+html.kural-narrow .reveal {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
 html.kural-narrow #kural-search-open {
   top: auto;
   left: 16px;
   bottom: calc(16px + env(safe-area-inset-bottom));
-  min-height: 44px;
-  min-width: 44px;
-  padding: 12px 18px;
+  height: 44px;
+  min-width: 84px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+html.kural-narrow .reveal .playback {
+  left: 50% !important;
+  right: auto !important;
+  bottom: calc(13px + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+}
+html.kural-narrow .reveal .controls {
+  right: 16px !important;
+  bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: auto !important;
+  height: 44px !important;
+}
+html.kural-narrow .reveal .controls button {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin: 0 !important;
+  transform: none !important;
 }
 html.kural-narrow #kural-search {
   width: 100%;
+  height: 100%;
   padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
   box-shadow: none;
-  background: #111;
+  background: #141414;
 }
 html.kural-narrow #kural-search header {
   padding-top: calc(14px + env(safe-area-inset-top));
@@ -395,56 +442,122 @@ html.kural-narrow #kural-search-results button {
   min-height: 44px;
   padding: 14px 16px;
 }
-html.kural-narrow .reveal .slides section {
+html.kural-narrow .reveal .slides {
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+}
+html.kural-narrow .reveal .slides > section.stack {
+  display: block !important;
+  padding: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+html.kural-narrow .reveal .slides section:not(.stack) {
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
-  justify-content: flex-start !important;
+  justify-content: center !important;
   box-sizing: border-box !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
   height: 100% !important;
-  padding: calc(28px + env(safe-area-inset-top)) 20px calc(76px + env(safe-area-inset-bottom)) !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+  padding: calc(20px + env(safe-area-inset-top)) 16px calc(76px + env(safe-area-inset-bottom)) !important;
+  overflow: hidden !important;
   text-align: left !important;
+}
+html.kural-narrow .reveal .slides section:not(.stack):not(:has(.k_id)) {
+  align-items: center !important;
+  text-align: center !important;
+}
+html.kural-narrow .reveal .slides section:not(.stack):not(:has(.k_id)) .sl-block,
+html.kural-narrow .reveal .slides section:not(.stack):not(:has(.k_id)) .sl-block-content,
+html.kural-narrow .reveal .slides section:not(.stack):not(:has(.k_id)) p {
+  text-align: center !important;
+  font-size: clamp(24px, 6.5vw, 34px) !important;
+  font-weight: 700 !important;
 }
 html.kural-narrow .reveal .slides section .sl-block {
   position: relative !important;
   left: auto !important;
   top: auto !important;
   right: auto !important;
-  width: auto !important;
+  width: 100% !important;
   max-width: 100% !important;
   height: auto !important;
-  margin: 0 0 14px !important;
+  margin: 0 !important;
   transform: none !important;
 }
 html.kural-narrow .reveal .slides section .sl-block-style,
 html.kural-narrow .reveal .slides section .sl-block-content {
   position: relative !important;
   transform: none !important;
-  width: auto !important;
+  width: 100% !important;
   max-width: 100% !important;
 }
-html.kural-narrow .reveal .slides section p {
-  white-space: normal !important;
-  font-size: 28px !important;
-  line-height: 1.45 !important;
-  margin: 0 0 10px !important;
+html.kural-narrow .reveal .slides section:has(.k_id) > .sl-block:not(.k_id):not(.k_t):not(.k_e) {
+  order: 3;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  margin: 14px 0 16px !important;
+  padding: 14px 12px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
 }
-html.kural-narrow .k_id { order: 1; width: auto !important; text-align: left !important; font-size: 15px !important; }
-html.kural-narrow .k_t { order: 2; width: auto !important; left: auto !important; text-align: left !important; font-size: 18px !important; }
-html.kural-narrow .reveal .slides section > .sl-block:not(.k_id):not(.k_t):not(.k_e) { order: 3; }
+html.kural-narrow .reveal .slides section:has(.k_id) p {
+  white-space: normal !important;
+  width: 100% !important;
+  font-size: clamp(12px, 3.25vw, 18px) !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  text-align: left !important;
+  overflow-wrap: break-word !important;
+}
+html.kural-narrow .reveal .slides section:has(.k_id) p + p {
+  margin-top: 6px !important;
+}
+html.kural-narrow .k_id {
+  order: 1;
+  width: 100% !important;
+  text-align: left !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  color: #9a9a9a !important;
+  margin-bottom: 4px !important;
+}
+html.kural-narrow .k_t {
+  order: 2;
+  width: 100% !important;
+  left: auto !important;
+  text-align: left !important;
+  font-size: clamp(16px, 4.4vw, 20px) !important;
+  font-weight: 600 !important;
+  color: #e2e2e2 !important;
+}
 html.kural-narrow .k_e {
   order: 4;
   position: relative !important;
   left: auto !important;
   top: auto !important;
-  width: auto !important;
-  font-size: 17px !important;
-  line-height: 1.5 !important;
+  width: 100% !important;
+  font-size: clamp(13.5px, 3.8vw, 16px) !important;
+  line-height: 1.55 !important;
+  color: #d4d0d0 !important;
+  text-align: left !important;
+  overflow-wrap: break-word !important;
 }
-html.kural-narrow .k_e span { position: static !important; font-size: 17px !important; }
-html.kural-narrow .k_e > span:first-child { margin-right: 0.35em; }
+html.kural-narrow .k_e span { position: static !important; font-size: inherit !important; }
+html.kural-narrow .k_e > span:first-child { display: none !important; }
 </style>
 <button id="kural-search-open" type="button">தேடு</button>
 <div id="kural-search" hidden>
@@ -483,10 +596,27 @@ html.kural-narrow .k_e > span:first-child { margin-right: 0.35em; }
     }
     if (isOpen && window.Reveal && Reveal.toggleAutoSlide) Reveal.toggleAutoSlide(false);
     if (isOpen) input.focus();
+    else input.blur();
   }
 
   function englishQuery(query) {
     return !/[\u0b80-\u0bff]/.test(query) && /[A-Za-z]/.test(query);
+  }
+
+  function fitSlide() {
+    if (!window.Reveal || !Reveal.getCurrentSlide) return;
+    var slide = Reveal.getCurrentSlide();
+    if (!slide) return;
+    var note = slide.querySelector(".k_e");
+    if (!note) return;
+    note.style.fontSize = "";
+    note.style.lineHeight = "";
+    if (!document.documentElement.classList.contains("kural-narrow")) return;
+    for (var px = 15; px >= 12; px -= 0.5) {
+      if (slide.scrollHeight <= slide.clientHeight + 2) break;
+      note.style.fontSize = px + "px";
+      note.style.lineHeight = "1.45";
+    }
   }
 
   function fit() {
@@ -517,6 +647,7 @@ html.kural-narrow .k_e > span:first-child { margin-right: 0.35em; }
       Reveal.configure(fit.desktop);
     }
     if (Reveal.layout) Reveal.layout();
+    fitSlide();
   }
 
   function show(query) {
@@ -545,6 +676,7 @@ html.kural-narrow .k_e > span:first-child { margin-right: 0.35em; }
       button.querySelector(".kural").textContent = hit.kural;
       button.querySelector(".note").textContent = clip(hit.note);
       button.addEventListener("click", function () {
+        setOpen(false);
         if (window.Reveal && Reveal.slide) {
           Reveal.slide(hit.h, hit.v);
           if (Reveal.toggleAutoSlide) Reveal.toggleAutoSlide(false);
@@ -572,6 +704,7 @@ html.kural-narrow .k_e > span:first-child { margin-right: 0.35em; }
   if (window.Reveal && Reveal.isReady && Reveal.isReady()) fit();
   else if (window.Reveal && Reveal.on) Reveal.on("ready", fit);
   else window.addEventListener("load", fit);
+  if (window.Reveal && Reveal.on) Reveal.on("slidechanged", fitSlide);
   window.addEventListener("resize", fit);
 })();
 </script>
