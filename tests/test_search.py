@@ -77,8 +77,40 @@ class SearchTests(unittest.TestCase):
         self.assertNotIn(781, false_friends)
         self.assertEqual(search(self.verses, "xyzzy"), [])
         self.assertEqual(english_groups("the rain"), [("மழை", "வான்")])
+        self.assertEqual(english_groups("raining"), [("மழை", "வான்")])
+        self.assertEqual(english_groups("rain weather"), [("மழை", "வான்")])
+        self.assertEqual([hit.number for hit in search(self.verses, "raain", limit=2)], [12, 15])
+        self.assertEqual([hit.number for hit in search(self.verses, "rain weather", limit=2)], [12, 15])
+        self.assertEqual(rain[0].term, "மழை")
         self.assertIsNone(english_groups("மழை"))
         self.assertIn("No matching", format_hits([], empty="No matching Thirukural."))
+
+    def test_a_short_word_does_not_match_inside_a_longer_word(self) -> None:
+        from thirukural.search import _words, normalize_text
+
+        hits = search(self.verses, "கண்", limit=None)
+        self.assertGreater(len(hits), 0)
+        for hit in hits:
+            verse = self.verses[hit.number - 1]
+            words = _words(
+                normalize_text(f"{hit.couplet} {verse.explanation} {verse.title}")
+            )
+            self.assertTrue(any(word == "கண்" or word.startswith("கண்") for word in words))
+        self.assertIn(34, {verse.number for verse in self.verses})
+        self.assertNotIn(34, {hit.number for hit in hits})
+
+    def test_romanized_tamil_and_verse_numbers(self) -> None:
+        rain = search(self.verses, "mazhai", limit=None)
+        self.assertEqual([hit.number for hit in rain[:2]], [12, 15])
+        self.assertEqual(rain[0].term, "மழை")
+        self.assertEqual(search(self.verses, "male", limit=2)[0].number, 12)
+        god = {hit.number for hit in search(self.verses, "kadavul", limit=None)}
+        self.assertIn(1, god)
+        self.assertIn(781, {hit.number for hit in search(self.verses, "natpu", limit=None)})
+        chapter = [hit.number for hit in search(self.verses, "வான் சிறப்பு", limit=10)]
+        self.assertEqual(sorted(chapter), list(range(11, 21)))
+        self.assertEqual(search(self.verses, "12", limit=None)[0].number, 12)
+        self.assertEqual(search(self.verses, "1")[0].title, "கடவுள் வாழ்த்து")
 
     def test_every_english_gloss_matches_a_verse(self) -> None:
         missing = [
@@ -105,13 +137,21 @@ class SearchTests(unittest.TestCase):
         }];
         const rain = api.search(index, "மழையால்").map((hit) => hit.n);
         const god = api.search(index, "கடவுள்").map((hit) => hit.n + ":" + hit.where);
-        const rainEn = api.search(index, "rain").map((hit) => hit.n);
+        const rainEn = api.search(index, "rain").map((hit) => hit.n + ":" + hit.term);
+        const raining = api.search(index, "raining").map((hit) => hit.n);
+        const roman = api.search(index, "mazhai").map((hit) => hit.n + ":" + hit.term);
+        const godRoman = api.search(index, "kadavul").map((hit) => hit.n);
+        const numbered = api.search(index, "12").map((hit) => hit.n);
         const unknown = api.search(index, "notaword").map((hit) => hit.n);
         console.log(JSON.stringify({
           forms: api.tokenForms("மழையால்", suffixes),
           rain: rain,
           god: god,
           rainEn: rainEn,
+          raining: raining,
+          roman: roman,
+          godRoman: godRoman,
+          numbered: numbered,
           unknown: unknown,
           groups: api.englishGroups("friend's test")
         }));
@@ -136,7 +176,11 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(report["forms"], ["மழையால்", "மழையால", "மழைய", "மழை"])
         self.assertEqual(report["rain"], [12])
         self.assertEqual(report["god"], ["1:விளக்கம்"])
-        self.assertEqual(report["rainEn"], [12])
+        self.assertEqual(report["rainEn"], ["12:மழை"])
+        self.assertEqual(report["raining"], [12])
+        self.assertEqual(report["roman"], ["12:மழை"])
+        self.assertEqual(report["godRoman"], [1])
+        self.assertEqual(report["numbered"], [12])
         self.assertEqual(report["unknown"], [])
         self.assertEqual(report["groups"], [["நட்பு ஆராய்தல்"]])
 

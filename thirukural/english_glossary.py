@@ -4,6 +4,9 @@ Each value is a set of alternatives. A verse matches an alternative when
 every word in that alternative occurs. Alternatives are combined with or.
 """
 
+import itertools
+from dataclasses import dataclass
+
 ENGLISH: dict[str, tuple[str, ...]] = {
     "god": ("கடவுள்",),
     "deity": ("கடவுள்",),
@@ -258,35 +261,143 @@ ENGLISH: dict[str, tuple[str, ...]] = {
     "friends test": ("நட்பு ஆராய்தல்",),
 }
 
+_PHRASES = tuple(key for key in ENGLISH if " " in key)
+_WORDS = tuple(dict.fromkeys(word for phrase in ENGLISH for word in phrase.split(" ")))
 
-def english_groups(query: str) -> list[tuple[str, ...]] | None:
-    """Tamil search groups for an English query.
 
-    ``None`` means the query is not English. An empty list means it is
-    English but no word in it is known.
+@dataclass(frozen=True)
+class LatinPlan:
+    """English glosses, plus leftover words that may be romanized Tamil."""
+
+    groups: tuple[tuple[str, ...], ...]
+    pending: tuple[str, ...]
+
+
+def latin_plan(query: str) -> LatinPlan | None:
+    """Split a Latin query into glossary groups and leftover words.
+
+    ``None`` means the query contains Tamil. Leftover words are not in
+    the glossary; the search keeps a leftover only when it is romanized
+    Tamil that occurs in the corpus.
     """
     if any("\u0b80" <= char <= "\u0bff" for char in query):
         return None
     words = _english_words(query)
     if not words:
-        return []
+        return LatinPlan((), ())
     groups: list[tuple[str, ...]] = []
+    pending: list[str] = []
     index = 0
     while index < len(words):
-        matched = False
+        matched_length = 0
         for length in (3, 2, 1):
             if index + length > len(words):
                 continue
-            phrase = " ".join(words[index : index + length])
-            terms = ENGLISH.get(phrase)
-            if terms:
-                groups.append(terms)
-                index += length
-                matched = True
-                break
-        if not matched:
-            return []
-    return groups
+            phrase = _known_phrase(words[index : index + length])
+            if phrase is None:
+                continue
+            groups.append(ENGLISH[phrase])
+            matched_length = length
+            break
+        if matched_length:
+            index += matched_length
+            continue
+        pending.append(words[index])
+        index += 1
+    return LatinPlan(tuple(groups), tuple(pending))
+
+
+def english_groups(query: str) -> list[tuple[str, ...]] | None:
+    """Tamil search groups for an English query.
+
+    ``None`` means the query is not English. An empty list means no
+    glossary word was recognized. Unrecognized words are left out, so
+    one unknown word does not erase the words that are known.
+    """
+    plan = latin_plan(query)
+    if plan is None:
+        return None
+    return list(plan.groups)
+
+
+def _known_phrase(words: list[str]) -> str | None:
+    choices = [_candidates(word) for word in words]
+    original = " ".join(words)
+    if original in ENGLISH:
+        return original
+    found: list[str] = []
+    for combo in itertools.product(*choices):
+        phrase = " ".join(combo)
+        if phrase in ENGLISH and phrase not in found:
+            found.append(phrase)
+    return found[0] if found else None
+
+
+def _candidates(word: str) -> list[str]:
+    forms = [word]
+    stem = _stem(word)
+    if stem and stem not in forms:
+        forms.append(stem)
+    if any(_form_known(form) for form in forms):
+        return [form for form in forms if _form_known(form)]
+    for form in forms:
+        if len(form) < 5:
+            continue
+        typo = _unique_typo(form)
+        if typo:
+            return [typo]
+    return forms
+
+
+def _form_known(form: str) -> bool:
+    if form in ENGLISH:
+        return True
+    return any(form in phrase.split(" ") for phrase in _PHRASES)
+
+
+def _stem(word: str) -> str | None:
+    for suffix in ("ing", "es", "ed", "s"):
+        if suffix == "s" and word.endswith("ss"):
+            return None
+        if word.endswith(suffix) and len(word) - len(suffix) >= 3:
+            return word[: -len(suffix)]
+    return None
+
+
+def _unique_typo(word: str) -> str | None:
+    hits = [
+        key
+        for key in _WORDS
+        if abs(len(key) - len(word)) <= 1 and _one_edit(word, key)
+    ]
+    if len(hits) == 1:
+        return hits[0]
+    return None
+
+
+def _one_edit(left: str, right: str) -> bool:
+    if left == right or abs(len(left) - len(right)) > 1:
+        return False
+    index_left = 0
+    index_right = 0
+    edits = 0
+    while index_left < len(left) and index_right < len(right):
+        if left[index_left] == right[index_right]:
+            index_left += 1
+            index_right += 1
+            continue
+        edits += 1
+        if edits > 1:
+            return False
+        if len(left) == len(right):
+            index_left += 1
+            index_right += 1
+        elif len(left) > len(right):
+            index_left += 1
+        else:
+            index_right += 1
+    edits += (len(left) - index_left) + (len(right) - index_right)
+    return edits == 1
 
 
 def _english_words(query: str) -> list[str]:
