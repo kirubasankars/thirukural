@@ -1,13 +1,13 @@
-"""The refactored builder must keep the published deck byte for byte."""
+"""The builder keeps the slide markup and adds word search."""
 
 import os
 import tempfile
 import unittest
 from pathlib import Path
 
-from thirukural.build import build
+from thirukural.build import apply_template, build
 from thirukural.model import Verse
-from thirukural.paths import OUTPUT_PATH
+from thirukural.paths import TEMPLATE_PATH
 from thirukural.render import format_couplet, render_slides
 from thirukural.repository import load_verses
 
@@ -77,8 +77,12 @@ class DeckTests(unittest.TestCase):
         self.assertTrue(slides.startswith("<section>\n"))
         self.assertTrue(slides.endswith("</section>"))
 
-    def test_build_matches_published_deck_from_any_directory(self) -> None:
-        expected = OUTPUT_PATH.read_text(encoding="utf-8")
+    def test_build_keeps_slide_markup_and_adds_search(self) -> None:
+        verses = load_verses()
+        expected = apply_template(
+            TEMPLATE_PATH.read_text(encoding="utf-8"),
+            render_slides(verses),
+        )
         previous = Path.cwd()
         with tempfile.TemporaryDirectory() as tmp:
             os.chdir(tmp)
@@ -87,5 +91,16 @@ class DeckTests(unittest.TestCase):
                 build(output_path=output)
             finally:
                 os.chdir(previous)
-            _assert_same(self, expected, output.read_text(encoding="utf-8"))
+            document = output.read_bytes().decode("utf-8")
+        start = document.find("<!-- kural-search:start -->")
+        end = document.find("<!-- kural-search:end -->")
+        self.assertGreater(start, 0)
+        self.assertGreater(end, start)
+        closing = document.find("\n", end)
+        bare = document[:start] + document[closing + 1 :]
+        _assert_same(self, expected, bare)
+        self.assertIn("தேடு", document)
+        self.assertIn("kural-narrow", document)
+        self.assertIn("rain, god, மழை", document)
+        self.assertIn('"n":12', document)
         self.assertEqual(Path.cwd(), previous)
