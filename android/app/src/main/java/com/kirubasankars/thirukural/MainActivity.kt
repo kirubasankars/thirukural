@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
             useWideViewPort = true
+            loadWithOverviewMode = true
             builtInZoomControls = false
             displayZoomControls = false
             textZoom = 100
