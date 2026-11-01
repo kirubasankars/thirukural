@@ -6,6 +6,7 @@ from pathlib import Path
 from thirukural.paths import DB_PATH, OUTPUT_PATH, TEMPLATE_PATH
 from thirukural.render import render_slides
 from thirukural.repository import load_verses
+from thirukural.search import add_search
 
 _PLACEHOLDER = "kural_list"
 
@@ -33,7 +34,10 @@ def build(
 ) -> None:
     verses = load_verses(db_path)
     slides = render_slides(verses)
-    document = apply_template(template_path.read_text(encoding="utf-8"), slides)
+    document = add_search(
+        apply_template(template_path.read_text(encoding="utf-8"), slides),
+        verses,
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(document, encoding="utf-8", newline="\n")
 
