@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="sl-root decks export loaded ua-phantomjs>
+<html class="sl-root decks export loaded ua-phantomjs">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta charset="utf-8">
@@ -30721,8 +30721,8 @@ html.kural-narrow #kural-search-open {
   left: 16px;
   bottom: calc(16px + env(safe-area-inset-bottom));
   height: 44px;
-  min-width: 84px;
-  padding: 0 20px;
+  min-width: 82px;
+  padding: 0 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -30730,17 +30730,17 @@ html.kural-narrow #kural-search-open {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 html.kural-narrow .reveal .playback {
-  left: 50% !important;
+  left: 106px !important;
   right: auto !important;
   bottom: calc(13px + env(safe-area-inset-bottom)) !important;
-  transform: translateX(-50%) !important;
+  transform: none !important;
 }
 html.kural-narrow .reveal .controls {
   right: 16px !important;
   bottom: calc(16px + env(safe-area-inset-bottom)) !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 6px !important;
   width: auto !important;
   height: 44px !important;
 }
@@ -30750,8 +30750,8 @@ html.kural-narrow .reveal .controls button {
   top: auto !important;
   right: auto !important;
   bottom: auto !important;
-  width: 40px !important;
-  height: 40px !important;
+  width: 36px !important;
+  height: 36px !important;
   margin: 0 !important;
   transform: none !important;
 }
@@ -30843,14 +30843,13 @@ html.kural-narrow .reveal .slides section:has(.k_id) > .sl-block:not(.k_id):not(
   box-sizing: border-box !important;
 }
 html.kural-narrow .reveal .slides section:has(.k_id) p {
-  white-space: normal !important;
+  white-space: nowrap !important;
   width: 100% !important;
-  font-size: clamp(12px, 3.25vw, 18px) !important;
+  font-size: 18px !important;
   font-weight: 600 !important;
   line-height: 1.5 !important;
   margin: 0 !important;
   text-align: left !important;
-  overflow-wrap: break-word !important;
 }
 html.kural-narrow .reveal .slides section:has(.k_id) p + p {
   margin-top: 6px !important;
@@ -31122,15 +31121,34 @@ html.kural-narrow .k_e > span:first-child { display: none !important; }
     if (!window.Reveal || !Reveal.getCurrentSlide) return;
     var slide = Reveal.getCurrentSlide();
     if (!slide) return;
+    var lines = slide.querySelectorAll(".sl-block:not(.k_id):not(.k_t):not(.k_e) p");
     var note = slide.querySelector(".k_e");
-    if (!note) return;
-    note.style.fontSize = "";
-    note.style.lineHeight = "";
+    for (var i = 0; i < lines.length; i++) lines[i].style.removeProperty("font-size");
+    if (note) {
+      note.style.removeProperty("font-size");
+      note.style.removeProperty("line-height");
+    }
     if (!document.documentElement.classList.contains("kural-narrow")) return;
-    for (var px = 15; px >= 12; px -= 0.5) {
+    if (lines.length && slide.querySelector(".k_id")) {
+      for (var cpx = 19; cpx >= 11; cpx -= 0.5) {
+        for (var j = 0; j < lines.length; j++) {
+          lines[j].style.setProperty("font-size", cpx + "px", "important");
+        }
+        var fitsWidth = true;
+        for (var k = 0; k < lines.length; k++) {
+          if (lines[k].scrollWidth > lines[k].clientWidth + 1) {
+            fitsWidth = false;
+            break;
+          }
+        }
+        if (fitsWidth) break;
+      }
+    }
+    if (!note) return;
+    for (var px = 15.5; px >= 11.5; px -= 0.5) {
       if (slide.scrollHeight <= slide.clientHeight + 2) break;
-      note.style.fontSize = px + "px";
-      note.style.lineHeight = "1.45";
+      note.style.setProperty("font-size", px + "px", "important");
+      note.style.setProperty("line-height", "1.45", "important");
     }
   }
 
