@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Thirukural" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#222222</item>
+        <item name="android:navigationBarColor">#222222</item>
+        <item name="android:windowBackground">#222222</item>
+        <item name="android:colorBackground">#222222</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>
